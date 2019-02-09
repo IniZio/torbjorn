@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["es7"],
+    "target": "es5",
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": true
+  },
+  "include": ["packages/**"],
+  "exclude": ["node_modules/**"]
+}

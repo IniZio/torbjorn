@@ -1,0 +1,15 @@
+{
+  "name": "torbjorn",
+  "version": "0.0.0",
+  "author": "IniZio",
+  "license": "MIT",
+  "main": "dist/torbjorn.cjs.js",
+  "module": "dist/torbjorn.es.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
