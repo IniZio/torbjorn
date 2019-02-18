@@ -97,6 +97,9 @@ jspm_packages/
 # DynamoDB Local files
 .dynamodb/
 
+# Idea
+.idea/*
+
 ### VisualStudioCode ###
 .vscode/*
 !.vscode/settings.json

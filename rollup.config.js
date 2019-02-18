@@ -47,15 +47,16 @@ export default Object.keys(builds).reduce((tasks, name) => {
         ),
         typescript({
           rollupCommonJSResolveHack: true,
-          tsconfig: `packages/${name}/tsconfig.json`
+          tsconfig: `packages/${name}/tsconfig.json`,
+          typescript: require('typescript')
         }),
         commonjs({
           ignoreGlobal: true,
           namedExports: {}
         }),
-        isProduction && (
-          uglify({}, minify)
-        ),
+        // isProduction && (
+        //   uglify({}, minify)
+        // ),
         copy([
           {files: `packages/${name}/src/${name}.{d.ts,js.flow}`, dest: `packages/${name}/dist`}
         ], {

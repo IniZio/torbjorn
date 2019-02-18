@@ -1,0 +1,13 @@
+[
+  ["action", {
+    "name": "XYZ",
+    "call": [
+      ["fs.write", [
+        {
+          "file": "try-xyz",
+          "data": "ooo it worked again :)"
+        }
+      ]]
+    ]
+  }]
+]

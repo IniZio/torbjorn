@@ -4,8 +4,10 @@
     "target": "es5",
     "outDir": "dist",
     "rootDir": ".",
-    "declaration": true
+    "declaration": true,
+    "declarationMap": true,
+    "experimentalDecorators": true
   },
-  "include": ["packages/**"],
+  "include": [],
   "exclude": ["node_modules/**"]
 }
