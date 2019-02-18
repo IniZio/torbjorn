@@ -1,0 +1,29 @@
+{
+  "torbjorn": [
+    [
+      "prompts",
+      [
+        {
+          "type": "text",
+          "name": "react_version",
+          "message": "What react version would you like to use?"
+        }
+      ]
+    ],
+    [
+      "action",
+      {
+        "name": "install-react",
+        "call": [
+          [
+            "install",
+            [
+              "react@<%= react_version %>",
+              "react-dom@<%= react_version %>"
+            ]
+          ]
+        ]
+      }
+    ]
+  ]
+}

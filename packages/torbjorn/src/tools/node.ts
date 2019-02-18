@@ -6,7 +6,8 @@ import {YarnOptions} from '../types'
 export const exec = execa
 
 // For fixing cannot call namespace issue
-const yarnInstall = yarnInstall_
+// @ts-ignore
+const yarnInstall = yarnInstall_.default || yarnInstall
 
 export const install = (
   (deps: string | string[], options?: YarnOptions): Promise<void> =>

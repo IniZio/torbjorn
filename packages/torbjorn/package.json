@@ -7,7 +7,8 @@
   "module": "dist/torbjorn.es.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "torb": "bin/torb.js"
+    "torb": "bin/torb",
+    "torbjorn": "bin/torb"
   },
   "files": [
     "bin",
