@@ -1,0 +1,28 @@
+[
+  ["action", {
+    "name": "CCC",
+    "call": [
+      ["console.log", [
+        "Executing CCC"
+      ]]
+    ]
+  }],
+  ["action", {
+    "name": "QAQ",
+    "call": [
+      ["prompts", [
+        {
+          "type": "text",
+          "name": "targetfile",
+          "message": "What is the target file?"
+        }
+      ]],
+      ["fs.write", [
+        {
+          "file": "<%= targetfile %>",
+          "data": "omg it works here too?"
+        }
+      ]]
+    ]
+  }]
+]  

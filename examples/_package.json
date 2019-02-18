@@ -1,0 +1,15 @@
+{
+  "torbjorn": [
+    ["action", {
+      "name": "QAQ",
+      "call": [
+        ["fs.write", [
+          {
+            "file": "try-package.json",
+            "data": "omg it works here too?"
+          }
+        ]]
+      ]
+    }]
+  ]  
+}
