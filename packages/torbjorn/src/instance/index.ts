@@ -4,12 +4,14 @@ import * as prompts from 'prompts'
 import * as ejs from 'ejs'
 
 import {FsOperations, Description, Installer, Action, Config} from '../types'
-import {fs, git, install, prompt} from '../tools'
+import {fs, git, install, prompt, exec} from '../tools'
 import {serial} from '../tools/util'
 import {createConfig} from './config'
 
 @autobind
 class Torbjorn {
+  exec = exec
+
   fs: FsOperations = fs
 
   /**
