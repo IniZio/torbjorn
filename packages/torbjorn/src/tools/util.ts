@@ -1,6 +1,6 @@
 import {OperationsFunction} from '../types'
 
-export function noop(): void {}
+export function noop(e): void {console.error(e)}
 
 /**
  * Run multiple operations in parallel
