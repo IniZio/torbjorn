@@ -3,7 +3,6 @@ import * as updateNotifier_ from 'update-notifier'
 
 import Torbjorn from './instance'
 
-import {initDispatch} from './commands/dispatch'
 import {initRun} from './commands/run'
 
 const cac = cac_
@@ -22,7 +21,6 @@ export async function cli(): Promise<void> {
   //   .option('--require <turret>', 'Require external turrets')
 
   initRun(terminal, torbjorn)
-  initDispatch(terminal, torbjorn)
 
   terminal.version(require('../package.json').version)
 

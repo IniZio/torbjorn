@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const {declare} = require('../packages/torbjorn')
 
-module.exports = declare([
+module.exports = declare(({prompt, action, fs}) => [
   ['console.log', 'hello world XD'],
   ['action', {
     name: 'ABC',
@@ -10,6 +10,7 @@ module.exports = declare([
     }
   }],
   ['action',
+    // eslint-disable-next-line func-names
     function CDE() {
       console.log('now at CDE')
     }],
@@ -23,5 +24,8 @@ module.exports = declare([
       }]],
       ['console.log', 'So you gave me $<%= tips %>']
     ]
+  }],
+  ['include', 'sdffsdf', {
+    only: ['dsd']
   }]
 ])

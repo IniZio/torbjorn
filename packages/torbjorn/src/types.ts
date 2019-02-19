@@ -1,5 +1,7 @@
 import Torbjorn from './instance'
 
+export type Constructor<T = {}> = new (...args: any[]) => T;
+
 /**
  * Callback function that can accept single or array of operations
  *
@@ -21,7 +23,7 @@ export interface Loader {
   test?: string | RegExp;
   load?(path: string): any;
   parse?(content: any): any;
-  write?(data: any): string;
+  write?(data: any): any;
 }
 
 /**
@@ -45,46 +47,12 @@ export interface Action {
   call: ((self: Torbjorn, ...args: any) => any) | Config[];
 }
 
-export type Config = ['action', Action] | [string, ...any[]]
-
-export interface FsOperations {
-  exists: OperationsFunction<{
-      path: string;
-  }, boolean>;
-  write: OperationsFunction<{
-      file: string;
-      data: any;
-  }, void>;
-  read: OperationsFunction<{
-      file: string | number | Buffer;
-  }, string>;
-  copy: OperationsFunction<{
-      src: string;
-      dest: string;
-  }, void>;
-  remove: OperationsFunction<{
-      path: string;
-  }, void>;
-  move: OperationsFunction<{
-      src: string;
-      dest: string;
-      opt?: any;
-  }, void>;
-  mkdir: OperationsFunction<{
-      path: string;
-  }, void>;
-  emptydir: OperationsFunction<{
-      path: string;
-  }, void>;
-  ejs: OperationsFunction<{
-      src: string;
-      dest: string;
-      context: any;
-      tplOptions?: any;
-      options?: any;
-      opt?: any;
-  }, {}>;
+export interface IncludeOptions {
+  only?: string[];
+  except?: string[];
 }
+
+export type Config = ['action', Action] | ['include', string, IncludeOptions] | [string, ...any[]]
 
 // interface TorbjornOptions {}
 

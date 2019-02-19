@@ -7,7 +7,7 @@ import {parallel} from './util'
 
 export const fs = {
   exists: parallel(({path}: {path: string}) => fsExtra.pathExists(path)),
-  write: parallel(({file, data}: {file: string; data: any}) => fsExtra.ensureFile(file).then(() => (isPlainObject(data) ? fsExtra.writeJSON : fsExtra.writeFile)(file, data))),
+  write: parallel(({file, data, options = {spaces: 2}}: {file: string; data: any; options?: any}) => fsExtra.ensureFile(file).then(() => (isPlainObject(data) ? fsExtra.writeJSON : fsExtra.writeFile)(file, data, options))),
   read: parallel(({file}: {file: string | number | Buffer}) => fsExtra.readFile(file).then(val => val.toString('utf8'))),
   copy: parallel(({src, dest}: {src: string; dest: string}) => fsExtra.copy(src, dest)),
   remove: parallel(({path}: {path: string}) => fsExtra.remove(path)),

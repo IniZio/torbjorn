@@ -1,7 +1,7 @@
 {
   "torbjorn": [
     [
-      "prompts",
+      "prompt",
       [
         {
           "type": "text",
@@ -16,14 +16,21 @@
         "name": "install-react",
         "call": [
           [
-            "install",
-            [
-              "react@<%= react_version %>",
-              "react-dom@<%= react_version %>"
-            ]
+            "config",
+            "package.json",
+            {
+              "dependencies": {
+                "react": "<%= react_version %>",
+                "react-dom": "<%= react_version %>"
+              }
+            }
           ]
         ]
       }
     ]
-  ]
+  ],
+  "dependencies": {
+    "react": "32",
+    "react-dom": "32"
+  }
 }
