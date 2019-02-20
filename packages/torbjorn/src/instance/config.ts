@@ -125,8 +125,6 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
 
         const loaders = {...defaultLoaders, ...getOr({}, 'loaders', this.descriptionOf(name))}
 
-        console.log('match: ', Object.keys(loaders).find(key => new RegExp(loaders[key].test || key).test(configFile)))
-
         return {
           ...loaders.default,
           ...(loaders[Object.keys(loaders).find(key => new RegExp(loaders[key].test || key).test(configFile))] || {})
@@ -147,8 +145,6 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
         }
 
         const loader = await loaderOf(name)
-
-        console.log('loader', configFile, loader)
 
         return loader.parse(await loader.load(configFile))
       }
