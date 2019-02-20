@@ -9,7 +9,7 @@ import {ToolsTorbjorn} from './tool'
 
 export interface ActionsTorbjorn extends BaseTorbjorn {
   action(action: Action): [string, Action];
-  run(): Promise<any>;
+  run(opt: {only?: string[]; except?: string[]}): Promise<any>;
 }
 
 function addAction<TBase extends Constructor<BaseTorbjorn> & Constructor<ConfigTorbjorn> & Constructor<ToolsTorbjorn>>(BaseClass: TBase): TBase & Constructor<ActionsTorbjorn> {
@@ -80,9 +80,14 @@ function addAction<TBase extends Constructor<BaseTorbjorn> & Constructor<ConfigT
      *
      * @memberof Torbjorn
      */
-    run = async (): Promise<void> => {
+    run = async ({only, except = []}: {only?: string[]; except?: string[]} = {}): Promise<void> => {
       // TODO: setup new branch
-      await this._dispatch(this._actions.map(action => action.name))
+      await this._dispatch(
+        this._actions
+          .map(action => action.name)
+          .filter(name => !only || only.includes(name))
+          .filter(name => !except || !except.includes(name))
+      )
       // TODO: go back to original branch
     }
 
