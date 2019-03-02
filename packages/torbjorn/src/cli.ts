@@ -15,7 +15,7 @@ export async function cli(): Promise<void> {
     updateNotifier({pkg: require('../package.json'), shouldNotifyInNpmScript: true}).notify()
   } catch (_) {}
 
-  const torbjorn = new Torbjorn(await (new Torbjorn().config('torbjorn')))
+  const torbjorn = new Torbjorn(await (new Torbjorn().load('torbjorn')))
 
   // terminal
   //   .option('--require <turret>', 'Require external turrets')
