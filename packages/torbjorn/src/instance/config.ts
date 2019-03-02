@@ -57,6 +57,7 @@ const defaultLoaders: {default: Loader; [index: string]: Loader} = {
 export interface ConfigTorbjorn extends BaseTorbjorn {
   readonly configs: any[];
 
+  load(name: string): Promise<any>;
   config(name: string, mutation?: object | string | ((val: any) => void)): Promise<any>;
 }
 
@@ -90,63 +91,59 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
       })
     }
 
+    _configFileOf = async (name: string): Promise<string> => {
+      const configFiles: string[] = path.basename(name).includes('.') ? [name] : getOr([], 'configFiles', this.descriptionOf(name))
+
+      const existFlags = await fs.exists(
+        [].concat(configFiles).map(path => ({path}))
+      )
+
+      return configFiles[existFlags.findIndex(Boolean)] || name
+    }
+
+    _loaderOf = async (name: string): Promise<Loader> => {
+      const configFile = await this._configFileOf(name)
+
+      const loaders = {...defaultLoaders, ...getOr({}, 'loaders', this.descriptionOf(name))}
+
+      return {
+        ...loaders.default,
+        ...(loaders[Object.keys(loaders).find(key => new RegExp(loaders[key].test || key).test(configFile))] || {})
+      }
+    }
+
     /**
-   * Edit config file with given name
-   *
-   * @param {string} name
-   * @param {Object | String | Function} mutation
-   * @returns {Promise<any>} new config
-   */
+     * Load config file like require
+     *
+     * @async
+     * @param {string} name
+     * @returns {Promise<any>} raw config
+     */
+    load = async (name: string): Promise<any> => {
+      const configFile = await this._configFileOf(name)
+
+      if (!configFile) {
+        throw new Error('Need `configFiles` field')
+      }
+
+      const loader = await this._loaderOf(name)
+
+      return loader.load(configFile)
+    }
+
+    /**
+     * Edit config file with given name
+     *
+    * @async
+     * @param {string} name
+     * @param {Object | String | Function} mutation
+     * @returns {Promise<any>} new config
+     */
     config = async (name: string, mutation?: object | string | ((val: any) => void)): Promise<any> => {
-      /**
-       * Returns config filename with given name
-       *
-       * @param {string} name
-       * @returns {string} config filename
-       */
-      const configFileOf = async (name: string): Promise<string> => {
-        const configFiles: string[] = path.basename(name).includes('.') ? [name] : getOr([], 'configFiles', this.descriptionOf(name))
-
-        const existFlags = await fs.exists(
-          [].concat(configFiles).map(path => ({path}))
-        )
-
-        return configFiles[existFlags.findIndex(Boolean)] || name
-      }
-
-      /**
-       * Returns loader object with given name
-       *
-       * @param {string} name
-       * @returns {Loader}
-       */
-      const loaderOf = async (name: string): Promise<Loader> => {
-        const configFile = await configFileOf(name)
-
-        const loaders = {...defaultLoaders, ...getOr({}, 'loaders', this.descriptionOf(name))}
-
-        return {
-          ...loaders.default,
-          ...(loaders[Object.keys(loaders).find(key => new RegExp(loaders[key].test || key).test(configFile))] || {})
-        }
-      }
-
-      /**
-       * Gets parsed config file with given name
-       *
-       * @param {string} name
-       * @returns {Promise<any>}
-       */
       const getConfig = async (name: string): Promise<any> => {
-        const configFile = await configFileOf(name)
+        const loader = await this._loaderOf(name)
 
-        if (!configFile) {
-          throw new Error('Need `configFiles` field')
-        }
-
-        const loader = await loaderOf(name)
-
-        return loader.parse(await loader.load(configFile))
+        return loader.parse(await this.load(name))
       }
 
       const config = await getConfig(name).catch(noop)
@@ -170,7 +167,10 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
           modified = mutation
       }
 
-      await fs.write({file: path.resolve(process.cwd(), await configFileOf(name)), data: (await loaderOf(name)).write(modified)})
+      await fs.write({
+        file: path.resolve(process.cwd(), await this._configFileOf(name)),
+        data: (await this._loaderOf(name)).write(modified)
+      })
       return modified
     }
   }
