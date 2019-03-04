@@ -32,9 +32,10 @@
   "dependencies": {
     "autobind-decorator": "^2.4.0",
     "cac": "^6.4.2",
-    "ejs": "^2.6.1",
+    "cross-spawn-with-kill": "^1.0.0",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1",
+    "inizio1-javascript-stringify": "^1.6.0",
     "json5": "^2.1.0",
     "lodash": "^4.17.11",
     "mem-fs": "^1.1.3",

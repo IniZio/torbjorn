@@ -11,7 +11,7 @@ export interface ToolsTorbjorn {
   git: SimpleGit;
   exec: typeof exec;
   fs: typeof fs;
-  prompt<T extends string = string>(questions: any, options?: any): Promise<{[index: string]: any}>;
+  prompt<T extends string = string>(questions: any, options?: any): Promise<prompts.Answers<T>>;
 }
 
 function addTools<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): TBase & Constructor<ToolsTorbjorn> {
