@@ -1,18 +1,22 @@
 import {merge, isFunction} from 'lodash/fp'
 
-import {Description, Config} from '../types'
+import {Description, Config, Action} from '../types'
+import {serial, noop} from '../tools/util'
 import Torbjorn from '.'
 
 class BaseTorbjorn {
+  private _config: Config
+
   private _options: any
 
   private _descriptions: {[index: string]: Description}
 
   constructor(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    config: (((self: Torbjorn) => Config[]) | Config[]) = [],
+    config: Config = [],
     options: {} = {}
   ) {
+    this._config = config
     this._options = options
   }
 
@@ -36,6 +40,39 @@ class BaseTorbjorn {
    */
   describe = (name: string, meta: Description | ((old: Description) => Description)): void => {
     this._descriptions = isFunction(meta) ? {[name]: meta(this._descriptions[name])} : merge({[name]: meta}, this._descriptions)
+  }
+
+  async run(): Promise<void> {
+    const stack = {}
+
+    await serial(this._config.filter(Boolean).reduce(
+      (accc, [_, action]): ((...args: any[]) => any)[] =>
+        [
+          ...accc,
+          ...(
+            Object.entries(action)
+              .reduce((acc, [key, parent]): ((...args: any[]) => any)[] =>
+                [
+                  ...acc,
+                  ...(typeof parent === 'function' ?
+                    [async () => {
+                      await parent.apply(this)
+                      stack[key] = true
+                    }] :
+                  // Execute if parent key is setup e.g. npm for lerna
+                    Object.entries(parent).map(([ckey, child]) =>
+                      async () => {
+                        if (!stack[key]) return
+                        if (typeof child === 'function') {
+                          await child.apply(this)
+                          stack[ckey] = true
+                        }
+                      }
+                    )
+                  )
+                ], []))
+        ]
+      , []).filter(Boolean))
   }
 
   // /**

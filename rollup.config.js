@@ -3,6 +3,8 @@ import toPascal from 'to-pascal-case'
 import typescript from 'rollup-plugin-typescript2'
 import nodeResolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
+import replace from 'rollup-plugin-replace'
+import json from 'rollup-plugin-json'
 import copy from 'rollup-plugin-copy-glob'
 import {uglify} from 'rollup-plugin-uglify'
 import {minify} from 'uglify-es'
@@ -35,16 +37,24 @@ export default Object.keys(builds).reduce((tasks, name) => {
     ...tasks,
     ...['es', 'cjs'].map(format => ({
       plugins: [
+        json(),
         isBrowserBundle(format) && (
           nodeResolve({
             main: false,
             module: true,
             jsnext: true,
-            extensions: ['.js', '.json'],
             preferBuiltIns: true,
             browser: isBrowserBundle(format)
           })
         ),
+        // replace({
+        //   delimiters: ['', ''],
+        //   values: {
+        //     'require(\'readable-stream/transform\')': 'require(\'stream\').Transform',
+        //     'require("readable-stream/transform")': 'require("stream").Transform',
+        //     'readable-stream': 'stream'
+        //   }
+        // }),
         typescript({
           rollupCommonJSResolveHack: true,
           tsconfig: `packages/${name}/tsconfig.json`,
@@ -52,7 +62,9 @@ export default Object.keys(builds).reduce((tasks, name) => {
         }),
         commonjs({
           ignoreGlobal: true,
-          namedExports: {}
+          namedExports: {
+            'node_modules/lodash/fp.js': ['flow', 'merge', 'isFunction', 'getOr', 'isPlainObject', 'isString', 'isNil']
+          }
         }),
         // isProduction && (
         //   uglify({}, minify)

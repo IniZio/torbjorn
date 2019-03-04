@@ -1,9 +1,11 @@
+// import * as spawn_ from 'cross-spawn-with-kill'
 import * as execa from 'execa'
 import * as yarnInstall_ from 'yarn-install'
 
 import {YarnOptions} from '../types'
 
-export const exec = execa
+export const exec = (file: string, args?: ReadonlyArray<string>, options: execa.Options = {}): execa.ExecaChildProcess => execa.call(null, file, args, {stdio: 'inherit', ...options})
+// export const spawn = spawn_
 
 // For fixing cannot call namespace issue
 // @ts-ignore

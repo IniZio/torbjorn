@@ -41,18 +41,14 @@ export interface Installer {
   now(deps: string | string[], options?: YarnOptions): Promise<void>;
 }
 
-export interface Action {
-  name: string;
-  description?: string;
-  call: ((self: Torbjorn, ...args: any) => any) | Config[];
-}
-
 export interface IncludeOptions {
   only?: string[];
   except?: string[];
 }
 
-export type Config = ['action', Action] | ['include', string, IncludeOptions] | [string, ...any[]]
+export type Action = ((this: Torbjorn) => any) | {[index: string]: Action};
+
+export type Config = [string | {[index: string]: any}, Action][]
 
 // interface TorbjornOptions {}
 

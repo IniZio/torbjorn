@@ -1,11 +1,13 @@
 import * as path from 'path'
 import {getOr, isPlainObject, isFunction, isString, isNil} from 'lodash/fp'
-import * as json5 from 'json5'
+import * as json5 from 'json5';
 
 import {Loader, Config} from '../types'
 import {fs} from '../tools'
 import {noop} from '../tools/util'
 import BaseTorbjorn from './base'
+
+const codeStringify = require('inizio1-javascript-stringify')
 
 const jsonLoader: Loader = {
   parse: (content: string) => {
@@ -32,7 +34,7 @@ const defaultLoaders: {default: Loader; [index: string]: Loader} = {
   '.js': {
     test: /\.js$/,
     load: (file: string) => require(path.resolve(process.cwd(), file)),
-    write: (data: string) => data
+    write: (data: any) => 'module.exports = ' + codeStringify(data, null, 2)
   },
   '.json': jsonLoader,
   rc: jsonLoader,
@@ -87,29 +89,12 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
       }
 
       this.describe('torbjorn', {
-        configFiles: ['.torbrc.js', '.torbrc.json', '.torbrc']
+        configFiles: ['.torbrc.js']
       })
-    }
 
-    _configFileOf = async (name: string): Promise<string> => {
-      const configFiles: string[] = path.basename(name).includes('.') ? [name] : getOr([], 'configFiles', this.descriptionOf(name))
-
-      const existFlags = await fs.exists(
-        [].concat(configFiles).map(path => ({path}))
-      )
-
-      return configFiles[existFlags.findIndex(Boolean)] || name
-    }
-
-    _loaderOf = async (name: string): Promise<Loader> => {
-      const configFile = await this._configFileOf(name)
-
-      const loaders = {...defaultLoaders, ...getOr({}, 'loaders', this.descriptionOf(name))}
-
-      return {
-        ...loaders.default,
-        ...(loaders[Object.keys(loaders).find(key => new RegExp(loaders[key].test || key).test(configFile))] || {})
-      }
+      this.describe('torbjorn-task', {
+        configFiles: ['.torbtask.js']
+      })
     }
 
     /**
@@ -146,11 +131,11 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
         return loader.parse(await this.load(name))
       }
 
-      const config = await getConfig(name).catch(noop)
-
       if (isNil(mutation)) {
-        return config
+        return getConfig(name)
       }
+
+      const config = await getConfig(name).catch(noop)
 
       let modified: any
 
@@ -172,6 +157,27 @@ function addConfig<TBase extends Constructor<BaseTorbjorn>>(BaseClass: TBase): T
         data: (await this._loaderOf(name)).write(modified)
       })
       return modified
+    }
+
+    private _configFileOf = async (name: string): Promise<string> => {
+      const configFiles: string[] = path.basename(name).includes('.') ? [name] : getOr([], 'configFiles', this.descriptionOf(name))
+
+      const existFlags = await fs.exists(
+        [].concat(configFiles).map(path => ({path}))
+      )
+
+      return configFiles[existFlags.findIndex(Boolean)] || configFiles[0]
+    }
+
+    private _loaderOf = async (name: string): Promise<Loader> => {
+      const configFile = await this._configFileOf(name)
+
+      const loaders = {...defaultLoaders, ...getOr({}, 'loaders', this.descriptionOf(name))}
+
+      return {
+        ...loaders.default,
+        ...(loaders[Object.keys(loaders).find(key => new RegExp(loaders[key].test || key).test(configFile))] || {})
+      }
     }
   }
 }
