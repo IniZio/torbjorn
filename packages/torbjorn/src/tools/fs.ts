@@ -1,4 +1,4 @@
-import {isPlainObject} from 'lodash'
+import {isPlainObject} from 'lodash/fp'
 import * as fsExtra from 'fs-extra'
 import * as fsEditor from 'mem-fs-editor'
 import * as memFs from 'mem-fs'

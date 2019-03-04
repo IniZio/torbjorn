@@ -10,7 +10,7 @@ export function initRun(terminal: CAC, torbjorn: Torbjorn): void {
     .command('run', 'Runs given config')
     .option('--only <only>', 'Only include certain actions')
     .option('--except <except>', 'Exclude certain actions')
-    .action(async ({only, except}) => {
-      await torbjorn.run({only: opt2Arr(only), except: opt2Arr(except)})
+    .action(async () => {
+      await torbjorn.run()
     })
 }
